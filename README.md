@@ -3,6 +3,16 @@
 
 
 
+Highlights : 
+
+✔ 19-Day Structured SQL Learning Journey,
+✔ 70+ Real-World SQL Problems Solved,
+✔ Custom HR & Sales Database Designed,
+✔ Query Optimization & Indexing Practice,
+✔ Business Reporting Scenarios,
+✔ GitHub Documentation,
+✔ Entry-Level Portfolio Project.
+
 
 # SQL Learning Journey – Real-World HR & Sales Database Project
 
