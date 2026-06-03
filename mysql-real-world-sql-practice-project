@@ -1,0 +1,679 @@
+# MySQL HR & Sales SQL Practice Project
+
+Q1. Find the second highest salary from the employees table.
+
+```sql
+SELECT MAX(salary)
+FROM employees
+WHERE salary < (SELECT MAX(salary) FROM employees);
+```
+
+### Q2. Find the third highest salary using DENSE_RANK.
+
+```sql
+SELECT salary
+FROM (
+SELECT salary,
+DENSE_RANK() OVER (ORDER BY salary DESC) AS salary_rank
+FROM employees
+) ranked
+WHERE salary_rank = 3;
+```
+
+### Q3. Find employees whose salary is greater than the average salary.
+
+```sql
+SELECT *
+FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees);
+```
+
+### Q4. Display the current date and time.
+
+```sql
+SELECT CURRENT_TIMESTAMP;
+```
+
+### Q5. Find duplicate salaries in the employees table.
+
+```sql
+SELECT salary, COUNT(*)
+FROM employees
+GROUP BY salary
+HAVING COUNT(*) > 1;
+```
+
+### Q6. Find duplicate rows based on salary using ROW_NUMBER.
+
+```sql
+WITH duplicate_rows AS (
+SELECT employee_id,
+ROW_NUMBER() OVER(PARTITION BY salary ORDER BY employee_id) AS row_num
+FROM employees
+)
+SELECT * FROM duplicate_rows WHERE row_num > 1;
+```
+
+### Q7. Find employees who have the same salary as another employee.
+
+```sql
+SELECT e1.employee_id, e1.full_name
+FROM employees e1
+INNER JOIN employees e2
+ON e1.salary = e2.salary
+AND e1.employee_id <> e2.employee_id;
+```
+
+### Q8. Retrieve the last 10 records from the employees table.
+
+```sql
+SELECT *
+FROM employees
+ORDER BY employee_id DESC
+LIMIT 10;
+```
+
+### Q9. Find the top 5 highest-paid employees.
+
+```sql
+SELECT *
+FROM employees
+ORDER BY salary DESC
+LIMIT 5;
+```
+
+### Q10. Calculate the total salary paid to all employees.
+
+```sql
+SELECT SUM(salary) AS total_salary
+FROM employees;
+```
+
+### Q11. Find employees who joined in the year 2020.
+
+```sql
+SELECT *
+FROM employees
+WHERE YEAR(join_date) = 2020;
+```
+
+### Q12. Find employees whose names start with 'A'.
+
+```sql
+SELECT *
+FROM employees
+WHERE full_name LIKE 'A%';
+```
+
+### Q13. Find employees who do not have managers.
+
+```sql
+SELECT *
+FROM employees
+WHERE manager_id IS NULL;
+```
+
+### Q14. Find the department with the highest number of employees.
+
+```sql
+SELECT department_id, COUNT(*) AS employee_count
+FROM employees
+GROUP BY department_id
+ORDER BY employee_count DESC
+LIMIT 1;
+```
+
+### Q15. Count the number of employees in each department.
+
+```sql
+SELECT department_id, COUNT(*)
+FROM employees
+GROUP BY department_id;
+```
+
+### Q16. Find the highest-paid employee in each department.
+
+```sql
+SELECT department_id, employee_id, salary
+FROM employees e
+WHERE salary = (
+SELECT MAX(salary)
+FROM employees
+WHERE department_id = e.department_id
+);
+```
+
+### Q17. Increase all employee salaries by 10%.
+
+```sql
+UPDATE employees
+SET salary = salary * 1.10;
+```
+
+### Q18. Find employees whose salary is between 50,000 and 100,000.
+
+```sql
+SELECT *
+FROM employees
+WHERE salary BETWEEN 50000 AND 100000;
+```
+
+### Q19. Find the youngest employee.
+
+```sql
+SELECT *
+FROM employees
+ORDER BY birth_date DESC
+LIMIT 1;
+```
+
+### Q20. Retrieve the first and last employee records.
+
+```sql
+(SELECT * FROM employees ORDER BY employee_id ASC LIMIT 1)
+UNION ALL
+(SELECT * FROM employees ORDER BY employee_id DESC LIMIT 1);
+```
+
+### Q21. Find employees managed by manager ID 1.
+
+```sql
+SELECT *
+FROM employees
+WHERE manager_id = 1;
+```
+
+### Q22. Count the number of unique departments.
+
+```sql
+SELECT COUNT(DISTINCT department_id)
+FROM employees;
+```
+
+### Q23. Find the department with the lowest average salary.
+
+```sql
+SELECT department_id, AVG(salary) AS avg_salary
+FROM employees
+GROUP BY department_id
+ORDER BY avg_salary ASC
+LIMIT 1;
+```
+
+### Q24. Delete employees belonging to department 8.
+
+```sql
+DELETE FROM employees
+WHERE department_id = 8;
+```
+
+### Q25. Find employees who have worked for more than 5 years.
+
+```sql
+SELECT *
+FROM employees
+WHERE DATEDIFF(CURDATE(), join_date) > 1825;
+```
+
+### Q26. Find the second highest salary again using a subquery.
+
+```sql
+SELECT MAX(salary)
+FROM employees
+WHERE salary < (
+SELECT MAX(salary)
+FROM employees
+);
+```
+
+### Q27. Remove all data from the sales table.
+
+```sql
+TRUNCATE TABLE sales;
+```
+
+### Q28. Convert employee data into JSON format.
+
+```sql
+SELECT JSON_ARRAYAGG(
+JSON_OBJECT(
+'employee_id', employee_id,
+'name', full_name,
+'department_id', department_id
+)
+) AS employee_json
+FROM employees;
+```
+
+### Q29. Display the current month name.
+
+```sql
+SELECT MONTHNAME(CURDATE());
+```
+
+### Q30. Convert a string into lowercase.
+
+```sql
+SELECT LOWER('HELLO WORLD');
+```
+
+### Q31. Find employees who are not managers.
+
+```sql
+SELECT *
+FROM employees
+WHERE employee_id NOT IN (
+SELECT DISTINCT manager_id
+FROM employees
+WHERE manager_id IS NOT NULL
+);
+```
+
+### Q32. Calculate total sales amount for each customer.
+
+```sql
+SELECT customer_id, SUM(sales_amount)
+FROM sales
+GROUP BY customer_id;
+```
+
+### Q33. Check whether the employees table is empty or not.
+
+```sql
+SELECT CASE
+WHEN EXISTS (SELECT 1 FROM employees)
+THEN 'Not Empty'
+ELSE 'Empty'
+END;
+```
+
+### Q34. Find the second highest salary in each department.
+
+```sql
+SELECT department_id, salary
+FROM (
+SELECT department_id,
+salary,
+DENSE_RANK() OVER(
+PARTITION BY department_id
+ORDER BY salary DESC
+) AS salary_rank
+FROM employees
+) ranked
+WHERE salary_rank = 2;
+```
+
+### Q35. Find employees whose salary is divisible by 10,000.
+
+```sql
+SELECT *
+FROM employees
+WHERE salary % 10000 = 0;
+```
+
+### Q36. Find employees who did not receive a bonus.
+
+```sql
+SELECT *
+FROM employees
+WHERE bonus IS NULL;
+```
+
+### Q37. Count employees by job role.
+
+```sql
+SELECT job_role, COUNT(*)
+FROM employees
+GROUP BY job_role;
+```
+
+### Q38. Find employees whose names end with 'n'.
+
+```sql
+SELECT *
+FROM employees
+WHERE full_name LIKE '%n';
+```
+
+### Q39. Find employees working in both department 1 and 2.
+
+```sql
+SELECT employee_id
+FROM employees
+WHERE department_id IN (1,2)
+GROUP BY employee_id
+HAVING COUNT(DISTINCT department_id) = 2;
+```
+
+### Q40. Find employees with duplicate salaries.
+
+```sql
+SELECT *
+FROM employees
+WHERE salary IN (
+SELECT salary
+FROM employees
+GROUP BY salary
+HAVING COUNT(*) > 1
+);
+```
+
+### Q41. Update salaries based on department conditions.
+
+```sql
+UPDATE employees
+SET salary = CASE
+WHEN department_id = 1 THEN salary * 1.10
+WHEN department_id = 2 THEN salary * 1.05
+ELSE salary
+END;
+```
+
+### Q42. Find employees whose department is NULL.
+
+```sql
+SELECT *
+FROM employees
+WHERE department_id IS NULL;
+```
+
+### Q43. Find the maximum and minimum salary in each department.
+
+```sql
+SELECT department_id,
+MAX(salary) AS max_salary,
+MIN(salary) AS min_salary
+FROM employees
+GROUP BY department_id;
+```
+
+### Q44. Find employees hired in the last 6 months.
+
+```sql
+SELECT *
+FROM employees
+WHERE hire_date > DATE_SUB(CURDATE(), INTERVAL 6 MONTH);
+```
+
+### Q45. Find total and average salary department-wise.
+
+```sql
+SELECT department_id,
+SUM(salary) AS total_salary,
+AVG(salary) AS avg_salary
+FROM employees
+GROUP BY department_id;
+```
+
+### Q46. Find employees who joined in the same month and year as their managers.
+
+```sql
+SELECT e.employee_id, e.full_name
+FROM employees e
+JOIN employees m
+ON e.manager_id = m.employee_id
+WHERE MONTH(e.join_date) = MONTH(m.join_date)
+AND YEAR(e.join_date) = YEAR(m.join_date);
+```
+
+### Q47. Count employees whose first and last character in the name are the same.
+
+```sql
+SELECT COUNT(*)
+FROM employees
+WHERE LEFT(full_name,1) = RIGHT(full_name,1);
+```
+
+### Q48. Display employee name and salary in a formatted sentence.
+
+```sql
+SELECT CONCAT(full_name,' earns ',salary) AS employee_info
+FROM employees;
+```
+
+### Q49. Find employees earning more than their managers.
+
+```sql
+SELECT e.employee_id, e.full_name
+FROM employees e
+JOIN employees m
+ON e.manager_id = m.employee_id
+WHERE e.salary > m.salary;
+```
+
+### Q50. Find employees from departments having less than 3 employees.
+
+```sql
+SELECT *
+FROM employees
+WHERE department_id IN (
+SELECT department_id
+FROM employees
+GROUP BY department_id
+HAVING COUNT(*) < 3
+);
+```
+
+### Q51. Find duplicate first names in the employees table.
+
+```sql
+SELECT *
+FROM employees
+WHERE first_name IN (
+SELECT first_name
+FROM employees
+GROUP BY first_name
+HAVING COUNT(*) > 1
+);
+```
+
+### Q52. Delete employees who have worked for more than 15 years.
+
+```sql
+DELETE FROM employees
+WHERE DATEDIFF(CURDATE(), join_date) > 5475;
+```
+
+### Q53. Find employees managed by manager ID 7.
+
+```sql
+SELECT *
+FROM employees
+WHERE manager_id = 7;
+```
+
+### Q54. Find the top 3 highest-paid employees in each department.
+
+```sql
+SELECT *
+FROM (
+SELECT *,
+DENSE_RANK() OVER(
+PARTITION BY department_id
+ORDER BY salary DESC
+) AS salary_rank
+FROM employees
+) ranked
+WHERE salary_rank <= 3;
+```
+
+### Q55. Find employees who have more than 5 years of experience.
+
+```sql
+SELECT *
+FROM employees
+WHERE DATEDIFF(CURDATE(), join_date) > 1825;
+```
+
+### Q56. Find departments where no employee was hired in the last 2 years.
+
+```sql
+SELECT *
+FROM employees
+WHERE department_id IN (
+SELECT department_id
+FROM employees
+GROUP BY department_id
+HAVING MAX(hire_date) < DATE_SUB(CURDATE(), INTERVAL 2 YEAR)
+);
+```
+
+### Q57. Find employees earning more than their department average salary.
+
+```sql
+SELECT *
+FROM employees e
+WHERE salary > (
+SELECT AVG(salary)
+FROM employees
+WHERE department_id = e.department_id
+);
+```
+
+### Q58. Find managers managing more than 2 employees.
+
+```sql
+SELECT *
+FROM employees
+WHERE employee_id IN (
+SELECT manager_id
+FROM employees
+GROUP BY manager_id
+HAVING COUNT(*) > 2
+);
+```
+
+### Q59. Display employee name with formatted hire date.
+
+```sql
+SELECT CONCAT(full_name, ' - ', DATE_FORMAT(hire_date,'%m/%d/%Y'))
+AS employee_info
+FROM employees;
+```
+
+### Q60. Find employees whose salary falls in the top 10 percentile.
+
+```sql
+SELECT *
+FROM employees
+WHERE salary >= (
+SELECT percentile_salary
+FROM (
+SELECT salary AS percentile_salary
+FROM employees
+ORDER BY salary
+LIMIT 1 OFFSET FLOOR((SELECT COUNT(*) * 0.9 FROM employees))
+) temp
+);
+```
+
+### Q61. Categorize employees by age group.
+
+```sql
+SELECT CASE
+WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 20 AND 30 THEN '20-30'
+WHEN TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) BETWEEN 31 AND 40 THEN '31-40'
+ELSE '41+'
+END AS age_bracket,
+COUNT(*)
+FROM employees
+GROUP BY age_bracket;
+```
+
+### Q62. Find the average salary of the top 5 earners in each department.
+
+```sql
+SELECT department_id,
+AVG(salary) AS avg_top5_salary
+FROM (
+SELECT department_id,
+salary,
+DENSE_RANK() OVER(
+PARTITION BY department_id
+ORDER BY salary DESC
+) AS salary_rank
+FROM employees
+) ranked
+WHERE salary_rank <= 5
+GROUP BY department_id;
+```
+
+### Q63. Find department-wise employee percentage.
+
+```sql
+SELECT department_id,
+(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM employees)) AS percentage
+FROM employees
+GROUP BY department_id;
+```
+
+### Q64. Find employees whose email domain is example.com.
+
+```sql
+SELECT *
+FROM employees
+WHERE email LIKE '%@example.com';
+```
+
+### Q65. Calculate year-to-date sales for each customer.
+
+```sql
+SELECT customer_id,
+SUM(sales_amount) AS ytd_sales
+FROM sales
+WHERE YEAR(sale_date) = YEAR(CURDATE())
+GROUP BY customer_id;
+```
+
+### Q66. Display employee hire date along with day of the week.
+
+```sql
+SELECT full_name,
+hire_date,
+DAYNAME(hire_date) AS day_of_week
+FROM employees;
+```
+
+### Q67. Find employees older than 30 years.
+
+```sql
+SELECT *
+FROM employees
+WHERE TIMESTAMPDIFF(YEAR, birth_date, CURDATE()) > 30;
+```
+
+### Q68. Group employees based on salary ranges.
+
+```sql
+SELECT CASE
+WHEN salary BETWEEN 0 AND 20000 THEN '0-20K'
+WHEN salary BETWEEN 20001 AND 50000 THEN '20K-50K'
+ELSE '50K+'
+END AS salary_range,
+COUNT(*)
+FROM employees
+GROUP BY salary_range;
+```
+
+Q69. Find employees with NULL bonus values.
+
+```sql
+SELECT *
+FROM employees
+WHERE bonus IS NULL;
+```
+
+### Q70. Find highest, lowest, and average salary for each job role.
+
+```sql
+SELECT job_role,
+MAX(salary) AS highest_salary,
+MIN(salary) AS lowest_salary,
+AVG(salary) AS avg_salary
+FROM employees
+GROUP BY job_role;
+```
+
+---
+
+Boom 💀 — now your SQL practice file finally has both the interview-style questions + the matching solutions together in one clean structure. Much easier for revision, interview prep, and portfolio practice.
