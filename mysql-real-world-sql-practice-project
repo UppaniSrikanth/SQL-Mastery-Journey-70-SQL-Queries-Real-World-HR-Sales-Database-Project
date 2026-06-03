@@ -673,7 +673,3 @@ AVG(salary) AS avg_salary
 FROM employees
 GROUP BY job_role;
 ```
-
----
-
-Boom 💀 — now your SQL practice file finally has both the interview-style questions + the matching solutions together in one clean structure. Much easier for revision, interview prep, and portfolio practice.
